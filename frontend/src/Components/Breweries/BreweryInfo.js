@@ -78,6 +78,75 @@ function BreweryInfo(props) {
                 value={brewery.history}
                 required
             />
+            <label className="label">Address</label>
+            <input
+                type="text"
+                id="address"
+                name="address"
+                class="form-control"
+                placeholder="Address"
+                v-model="brewery.address"
+                onChange={handleInputChange}
+                value={brewery.address}
+                required
+            />
+            <label className="label">Phone</label>
+            <input
+                type="text"
+                id="phone"
+                name="phone"
+                class="form-control"
+                placeholder="Phone"
+                v-model="brewery.phone"
+                onChange={handleInputChange}
+                value={brewery.phone}
+                required
+            />
+            <label className="label">Email</label>
+            <input
+                type="email"
+                id="email"
+                name="email"
+                class="form-control"
+                placeholder="Email"
+                v-model="brewery.email"
+                onChange={handleInputChange}
+                value={brewery.email}
+                required
+            />
+            <label className="label">Image</label>
+            <input
+                type="text"
+                id="imgUrl"
+                name="imgUrl"
+                class="form-control"
+                placeholder="Image Url"
+                v-model="brewery.imgUrl"
+                onChange={handleInputChange}
+                value={brewery.imgUrl}
+                required
+            />
+            <label className="label">Hours</label>
+            <input
+                type="text"
+                id="hours"
+                name="hours"
+                class="form-control"
+                placeholder="Hours"
+                v-model="brewery.hours"
+                onChange={handleInputChange}
+                value={brewery.hours}
+                required
+            />
+            <label className="label">Pet Friendly</label>
+            <input
+                type="checkBox"
+                id="petFriendly"
+                name="petFriendly"
+                class="form-control"
+                v-model="brewery.petFriendly"
+                onChange={handleInputChange}
+            />
             <div className="buttonContainer">
                 <div>
                     <button className="button" type="submit" onClick={handleSubmit}>Submit</button>
