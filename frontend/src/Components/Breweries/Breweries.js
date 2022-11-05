@@ -1,42 +1,29 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { baseUrl } from '../../Shared/baseUrl';
 import { Link } from 'react-router-dom';
 import MainMenu from '../../Shared/MainMenu';
+import { setAuthHeader } from '../../Redux/token';
 
-const data = [
-    {
-        "id": "1",
-        "name": "Brewery 1",
-        "history": "",
-        "address":"",
-        "phone": "",
-        "email": "",
-        "imgUrl": "",
-        "hours": "",
-        "isPetFriendly": true
-    },
-    {
-        "id": "2",
-        "name": "Brewery 2",
-        "history": "",
-        "address":"",
-        "phone": "",
-        "email": "",
-        "imgUrl": "",
-        "hours": "",
-        "isPetFriendly": true
-    },
-]
 function Breweries(props) {
-    function getData() {
+    const [breweries, setBreweries] = useState([]);
+
+    useEffect(()=>{
+        setAuthHeader();
+        getData();
+    },[]);
+
+    async function getData() {
         // call axios here
-        //let response = axios.get(baseUrl + "/breweries");
-        // return response
-        //for testing only
-        return data;
+        try {
+            //save to server
+            let response = await axios.get(baseUrl + "/breweries"+window.location.search);
+            setBreweries(response.data);
+        } catch (ex) {
+            alert(ex);
+        }
     }
-    const breweries = getData();
+
     return (
         <div>
             <MainMenu />
@@ -44,9 +31,9 @@ function Breweries(props) {
             <ul>
                 {
                     breweries.map(brewery=>{
-                        let link = "/brewery-info?" + brewery.id;
+                        let link = "/brewery-info?" + brewery.breweryId;
                         return(
-                            <li>
+                            <li key={brewery.breweryId}>
                                 <div><Link to={link}>{brewery.name}</Link></div>
                             </li>
                         );

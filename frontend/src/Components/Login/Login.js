@@ -28,12 +28,15 @@ class Login extends Component {
     handleLogin = async () => {
         const data = { username: this.state.username, password: this.state.password };
 
+        try {
+            const userWithToken = await axios.post(baseUrl + '/login', data)
 
-        const userWithToken = await axios.post(baseUrl + '/login', data)
 
-
-        await this.props.dispatch(addToken(userWithToken.data.token))
-        await this.props.dispatch(addUser(userWithToken.data.user));
+            await this.props.dispatch(addToken(userWithToken.data.token))
+            await this.props.dispatch(addUser(userWithToken.data.user));
+        } catch (ex) {
+            alert(ex);
+        }
     }
 
     handleInputChange = (event) => {

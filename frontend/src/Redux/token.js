@@ -1,5 +1,16 @@
 import * as ActionTypes from './actionTypes';
+import axios from 'axios'
 const tokenKey = "jwtToken";
+
+export function setAuthHeader() {
+    let token = sessionStorage.getItem(tokenKey);
+    if (token) {
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    }
+    else {
+        delete axios.defaults.headers.common["Authorization"];
+    }
+}
 export const Token = (state = {
     token: sessionStorage.getItem(tokenKey)==null ? undefined:sessionStorage.getItem(tokenKey)
 }, action) => {

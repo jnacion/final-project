@@ -7,7 +7,6 @@ function Beers(props) {
         <div>
             <MainMenu />
             Beers component
-            <Link to="/beer-info?123">Beer Info</Link>
         </div>
     )
 }
