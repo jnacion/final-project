@@ -4,6 +4,7 @@ import { baseUrl } from '../../Shared/baseUrl';
 import { Link } from 'react-router-dom';
 import MainMenu from '../../Shared/MainMenu';
 import { setAuthHeader } from '../../Redux/token';
+import { useSelector } from 'react-redux';
 
 function BreweryInfo(props) {
     const [brewery, setBrewery] = useState({
@@ -17,10 +18,11 @@ function BreweryInfo(props) {
         "hours": "",
         "petFriendly": true
     });
+    const token = useSelector(state=>state.token.token);
     useEffect(() => {
-        setAuthHeader();
+        setAuthHeader(token);
         getData();
-    }, []);
+    }, [token]);
 
     async function getData() {
         // call axios here
@@ -44,7 +46,7 @@ function BreweryInfo(props) {
         // TO DO: validate brewery information before sending to server
         try {
             //save to server
-            let response = await axios.put(baseUrl + "/breweries/" + brewery.breweryId, brewery);
+            await axios.put(baseUrl + "/breweries/" + brewery.breweryId, brewery);
             window.location = "/breweries";
         } catch (ex) {
             alert(ex);

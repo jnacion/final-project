@@ -4,14 +4,15 @@ import { baseUrl } from '../../Shared/baseUrl';
 import { Link } from 'react-router-dom';
 import MainMenu from '../../Shared/MainMenu';
 import { setAuthHeader } from '../../Redux/token';
+import { useSelector } from 'react-redux';
 
 function Breweries(props) {
     const [breweries, setBreweries] = useState([]);
-
+    const token = useSelector(state=>state.token.token);
     useEffect(()=>{
-        setAuthHeader();
+        setAuthHeader(token);
         getData();
-    },[]);
+    },[token]);
 
     async function getData() {
         // call axios here
