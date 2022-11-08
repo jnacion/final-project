@@ -1,15 +1,21 @@
 import * as ActionTypes from './actionTypes';
-
-export const User = (state = {
+const userKey="currentUser";
+// try getting current user from session storage
+// if not found (null) set it an empty record
+export const User = (state = sessionStorage.getItem(userKey)==null?{
         id: null,
         username: '',
         authorities: []
-    }, action) => {
+    }:JSON.parse(sessionStorage.getItem(userKey)), action) => {
     switch (action.type) {
         case ActionTypes.ADD_USER:
+            // save user to session storage
+            sessionStorage.setItem(userKey, JSON.stringify(action.payload));
             return { ...state, id: action.payload.id, username: action.payload.username, authorities: action.payload.authorities }
         
         case ActionTypes.DELETE_USER:
+            // remove user from session storage
+            sessionStorage.removeItem(userKey);
             return { ...state, id: null, username: '', authorities: [] }
 
         default:

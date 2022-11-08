@@ -7,18 +7,22 @@ import { setAuthHeader } from '../../Redux/token';
 import { useSelector } from 'react-redux';
 
 function Breweries(props) {
+    // store list of breweries in state
     const [breweries, setBreweries] = useState([]);
+    // get token from redux store
     const token = useSelector(state=>state.token.token);
+
+    // set auth token in axios header before loading list of breweries
     useEffect(()=>{
         setAuthHeader(token);
         getData();
     },[token]);
 
     async function getData() {
-        // call axios here
         try {
-            //save to server
+            // get list of breweries 
             let response = await axios.get(baseUrl + "/breweries"+window.location.search);
+            // and save to state
             setBreweries(response.data);
         } catch (ex) {
             alert(ex);

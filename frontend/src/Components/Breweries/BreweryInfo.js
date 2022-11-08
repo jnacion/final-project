@@ -7,6 +7,7 @@ import { setAuthHeader } from '../../Redux/token';
 import { useSelector } from 'react-redux';
 
 function BreweryInfo(props) {
+    // store currently selected brewery in state
     const [brewery, setBrewery] = useState({
         "id": "",
         "name": "",
@@ -18,16 +19,19 @@ function BreweryInfo(props) {
         "hours": "",
         "petFriendly": true
     });
+    // get token and current user from redux store
     const token = useSelector(state=>state.token.token);
+    const user = useSelector(state=>state.user);
+
+    // set auth token in axios header before loading list of breweries
     useEffect(() => {
         setAuthHeader(token);
         getData();
     }, [token]);
 
     async function getData() {
-        // call axios here
         try {
-            //save to server
+            // get brewery from web api using the query string passed to the page
             let response = await axios.get(baseUrl + "/breweries" + window.location.search);
             setBrewery(response.data[0]);
         } catch (ex) {
@@ -35,6 +39,7 @@ function BreweryInfo(props) {
         }
     }
 
+    // update brewery in state for each change in every form element
     function handleInputChange(event) {
         event.preventDefault()
         setBrewery({
@@ -42,32 +47,44 @@ function BreweryInfo(props) {
             [event.target.name]: event.target.value
         })
     }
+
     async function handleSubmit() {
         // TO DO: validate brewery information before sending to server
         try {
             //save to server
             await axios.put(baseUrl + "/breweries/" + brewery.breweryId, brewery);
+            // then redirect to list of breweries
             window.location = "/breweries";
         } catch (ex) {
             alert(ex);
         }
     }
+    // check if current user can edit the form
+    let isEditable = false;
+    let role = user.authorities[0]
+    if(role) {
+        if(role.name==="ROLE_ADMIN" ||
+        (role.name==="ROLE_BREWER" && user.breweryId===brewery.breweryId)) {
+            isEditable = true;
+        } 
+    }
+    // change display based on access
     return (
         <div>
             <MainMenu />
             <div>BreweryInfo component</div>
             <label className="label">Brewery Name</label>
             <input
-                type="text"
-                id="name"
-                name="name"
-                class="form-control"
-                placeholder="Brewery Name"
-                v-model="brewery.name"
-                onChange={handleInputChange}
-                value={brewery.name}
-                required
-            />
+                    type="text"
+                    id="name"
+                    name="name"
+                    class="form-control"
+                    placeholder="Brewery Name"
+                    v-model="brewery.name"
+                    onChange={handleInputChange}
+                    value={brewery.name}
+                    required
+                />
             <label className="label">History</label>
             <input
                 type="text"
@@ -150,9 +167,13 @@ function BreweryInfo(props) {
                 onChange={handleInputChange}
             />
             <div className="buttonContainer">
-                <div>
-                    <button className="button" type="submit" onClick={handleSubmit}>Submit</button>
-                </div>
+                {isEditable?
+                    (
+                        <div>
+                            <button className="button" type="submit" onClick={handleSubmit}>Submit</button>
+                        </div>
+                    ):null
+                }
                 <div>
                     <Link to="/breweries"><button className="button" type="cancel">Cancel</button></Link>
                 </div>
