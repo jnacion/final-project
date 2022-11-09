@@ -7,9 +7,9 @@ import { setAuthHeader } from '../../Redux/token';
 import { useSelector } from 'react-redux';
 
 function BreweryInfo(props) {
-    // store currently selected brewery in state
-    const [brewery, setBrewery] = useState({
-        "id": "",
+    // initialize brewery in state (basis is server:Model Brewery)
+    const emptyBrewery = {
+        "breweryId": 0,
         "name": "",
         "history": "",
         "address": "",
@@ -17,11 +17,13 @@ function BreweryInfo(props) {
         "email": "",
         "imgUrl": "",
         "hours": "",
-        "petFriendly": true
-    });
+        "isPetFriendly": true
+    };
+
+    const [brewery, setBrewery] = useState(emptyBrewery);
     // get token and current user from redux store
-    const token = useSelector(state=>state.token.token);
-    const user = useSelector(state=>state.user);
+    const token = useSelector(state => state.token.token);
+    const user = useSelector(state => state.user);
 
     // set auth token in axios header before loading list of breweries
     useEffect(() => {
@@ -32,8 +34,14 @@ function BreweryInfo(props) {
     async function getData() {
         try {
             // get brewery from web api using the query string passed to the page
-            let response = await axios.get(baseUrl + "/breweries" + window.location.search);
-            setBrewery(response.data[0]);
+            let response = { data: emptyBrewery };
+            // if a brewery id was passed to this page then get it from api otherwise return an empty brewery
+            if (window.location.search) {
+                //remove starting ?
+                let id = window.location.search.substring(1);
+                response = await axios.get(baseUrl + "/breweries/" + id);
+            }
+            setBrewery(response.data);
         } catch (ex) {
             alert(ex);
         }
@@ -52,7 +60,14 @@ function BreweryInfo(props) {
         // TO DO: validate brewery information before sending to server
         try {
             //save to server
-            await axios.put(baseUrl + "/breweries/" + brewery.breweryId, brewery);
+            //if id is zero then create (post) a new brewery
+            if (brewery.breweryId === 0) {
+                await axios.post(baseUrl + "/breweries", brewery);
+            } else {
+                // else update the existing record
+                await axios.put(baseUrl + "/breweries/" + brewery.breweryId, brewery);
+            }
+
             // then redirect to list of breweries
             window.location = "/breweries";
         } catch (ex) {
@@ -62,11 +77,11 @@ function BreweryInfo(props) {
     // check if current user can edit the form
     let isEditable = false;
     let role = user.authorities[0]
-    if(role) {
-        if(role.name==="ROLE_ADMIN" ||
-        (role.name==="ROLE_BREWER" && user.breweryId===brewery.breweryId)) {
+    if (role) {
+        if (role.name === "ROLE_ADMIN" ||
+            (role.name === "ROLE_BREWER" && user.breweryId === brewery.breweryId)) {
             isEditable = true;
-        } 
+        }
     }
     // change display based on access
     return (
@@ -75,22 +90,22 @@ function BreweryInfo(props) {
             <div>BreweryInfo component</div>
             <label className="label">Brewery Name</label>
             <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    class="form-control"
-                    placeholder="Brewery Name"
-                    v-model="brewery.name"
-                    onChange={handleInputChange}
-                    value={brewery.name}
-                    required
-                />
+                type="text"
+                id="name"
+                name="name"
+                className="form-control"
+                placeholder="Brewery Name"
+                v-model="brewery.name"
+                onChange={handleInputChange}
+                value={brewery.name}
+                required
+            />
             <label className="label">History</label>
             <input
                 type="text"
                 id="history"
                 name="history"
-                class="form-control"
+                className="form-control"
                 placeholder="History"
                 v-model="brewery.history"
                 onChange={handleInputChange}
@@ -102,7 +117,7 @@ function BreweryInfo(props) {
                 type="text"
                 id="address"
                 name="address"
-                class="form-control"
+                className="form-control"
                 placeholder="Address"
                 v-model="brewery.address"
                 onChange={handleInputChange}
@@ -114,7 +129,7 @@ function BreweryInfo(props) {
                 type="text"
                 id="phone"
                 name="phone"
-                class="form-control"
+                className="form-control"
                 placeholder="Phone"
                 v-model="brewery.phone"
                 onChange={handleInputChange}
@@ -126,19 +141,20 @@ function BreweryInfo(props) {
                 type="email"
                 id="email"
                 name="email"
-                class="form-control"
+                className="form-control"
                 placeholder="Email"
                 v-model="brewery.email"
                 onChange={handleInputChange}
                 value={brewery.email}
                 required
             />
+
             <label className="label">Image</label>
             <input
                 type="text"
                 id="imgUrl"
                 name="imgUrl"
-                class="form-control"
+                className="form-control"
                 placeholder="Image Url"
                 v-model="brewery.imgUrl"
                 onChange={handleInputChange}
@@ -150,7 +166,7 @@ function BreweryInfo(props) {
                 type="text"
                 id="hours"
                 name="hours"
-                class="form-control"
+                className="form-control"
                 placeholder="Hours"
                 v-model="brewery.hours"
                 onChange={handleInputChange}
@@ -162,20 +178,24 @@ function BreweryInfo(props) {
                 type="checkBox"
                 id="petFriendly"
                 name="petFriendly"
-                class="form-control"
-                v-model="brewery.petFriendly"
+                className="form-control"
+                v-model="brewery.isPetFriendly"
                 onChange={handleInputChange}
             />
             <div className="buttonContainer">
-                {isEditable?
+                {isEditable ?
                     (
                         <div>
                             <button className="button" type="submit" onClick={handleSubmit}>Submit</button>
                         </div>
-                    ):null
+                    ) : null
                 }
                 <div>
                     <Link to="/breweries"><button className="button" type="cancel">Cancel</button></Link>
+                </div>
+                <div></div>
+                <div>
+                    <Link to={"/beers?breweryId=" + brewery.breweryId}><button className="button" type="cancel">My Beers</button></Link>
                 </div>
             </div>
         </div>

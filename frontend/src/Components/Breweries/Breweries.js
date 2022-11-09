@@ -9,8 +9,9 @@ import { useSelector } from 'react-redux';
 function Breweries(props) {
     // store list of breweries in state
     const [breweries, setBreweries] = useState([]);
-    // get token from redux store
+    // get token and user from redux store
     const token = useSelector(state=>state.token.token);
+    const user = useSelector(state=>state.user);
 
     // set auth token in axios header before loading list of breweries
     useEffect(()=>{
@@ -21,18 +22,34 @@ function Breweries(props) {
     async function getData() {
         try {
             // get list of breweries 
-            let response = await axios.get(baseUrl + "/breweries"+window.location.search);
+            let response = await axios.get(baseUrl + "/breweries");
             // and save to state
             setBreweries(response.data);
         } catch (ex) {
             alert(ex);
         }
     }
-
+    // check if current user is administrator
+    let isAdmin = false;
+    let role = user.authorities[0]
+    if(role) {
+        if(role && role.name==="ROLE_ADMIN") {
+            isAdmin = true;
+        } 
+    }
     return (
         <div>
             <MainMenu />
             <div>Breweries component</div>
+            <div className="buttonContainer">
+                {isAdmin?
+                    (
+                        <div>
+                            <Link to="/brewery-info"><button className="button" type="button">Add</button></Link>
+                        </div>
+                    ):null
+                }
+            </div>
             <ul>
                 {
                     breweries.map(brewery=>{
