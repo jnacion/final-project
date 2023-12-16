@@ -5,13 +5,14 @@ const userKey="currentUser";
 export const User = (state = sessionStorage.getItem(userKey)==null?{
         id: null,
         username: '',
+        breweryId: 0,
         authorities: []
     }:JSON.parse(sessionStorage.getItem(userKey)), action) => {
     switch (action.type) {
         case ActionTypes.ADD_USER:
             // save user to session storage
             sessionStorage.setItem(userKey, JSON.stringify(action.payload));
-            return { ...state, id: action.payload.id, username: action.payload.username, authorities: action.payload.authorities }
+            return { ...state, id: action.payload.id, username: action.payload.username, breweryId: action.payload.breweryId, authorities: action.payload.authorities }
         
         case ActionTypes.DELETE_USER:
             // remove user from session storage
