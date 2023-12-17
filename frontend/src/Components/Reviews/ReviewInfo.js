@@ -63,11 +63,10 @@ function ReviewInfo() {
     }
 
     async function getUserId() {
-        const response = await axios.get(baseUrl + `/users/id/?username=${user.username}`)
         setReview(prev => {
             return {
                 ...prev,
-                userId: response.data
+                userId: user.userId
             }
         })
     }

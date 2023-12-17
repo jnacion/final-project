@@ -20,19 +20,21 @@ function MainMenu(props) {
         event.preventDefault();
         props.addToken("");
         props.deleteUser();
-        window.location="/login"
+        window.location = "/login"
     }
     return (
         <div className='mainMenu'>
             <nav className="mainMenu">
-                <Link className="nav-logo" to="/breweries">Brew-ser</Link>
-                <div>
-                <Link to='/breweries'><button className="nav-btn" type="button">Breweries</button></Link>
-                <Link to='/beers'><button className="nav-btn" type="button">Beers</button></Link>
-                <Link to='/reviews'><button className="nav-btn" type="button">Reviews</button></Link>
-                <button className="nav-btn" type="button" onClick={handleLogout}>Logout</button>
-                </div>
-                
+                <Link className="nav-logo" to="/">Brew-ser</Link>
+                {props.token.token ?
+                    <div>
+                        <Link to='/breweries'><button className="nav-btn" type="button">Breweries</button></Link>
+                        <Link to='/beers'><button className="nav-btn" type="button">Beers</button></Link>
+                        <Link to='/reviews'><button className="nav-btn" type="button">Reviews</button></Link>
+                        <button className="nav-btn" type="button" onClick={handleLogout}>Logout</button>
+                    </div>
+                    : null
+                }
             </nav>
         </div>
     )

@@ -43,7 +43,7 @@ class Main extends Component {
         let defaultUrl = "/breweries";
         let role = this.props.user.authorities[0];
         let loginUrl = "/login";
-        if (this.props.token.token !== undefined && window.location.pathname === loginUrl) {
+        if (this.props.token.token !== undefined && (window.location.pathname === loginUrl|| window.location.pathname==="/")) {
             if (role) {
                 if (role.name === "ROLE_BREWER" && this.props.user.breweryId) {
                     defaultUrl = "/brewery-info?" + this.props.user.breweryId;
